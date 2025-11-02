@@ -202,7 +202,7 @@ wordscope/
 
 ## 🧩 License
 
-MIT License © 2025 [Miloš Živanović](./LICENSE
+MIT License © 2025 [Miloš Živanović](./LICENSE)
 
 ---
 
@@ -213,5 +213,5 @@ MIT License © 2025 [Miloš Živanović](./LICENSE
 * Support more languages via multilingual transformers
 * Optional GUI / web app for drag-and-drop `.docx` analysis
 
-```
+
 
