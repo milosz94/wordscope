@@ -1,0 +1,57 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Virtual environment ---
+venv/
+.env/
+.envrc
+.venv/
+
+# --- System / Editor junk ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# --- Build & packaging ---
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+pip-wheel-metadata/
+
+# --- Logs & temp files ---
+*.log
+*.tmp
+*.bak
+
+# --- Output data ---
+outputs/
+*.txt
+*.csv
+*.json
+
+# --- Example or test results ---
+examples/*.analysis.txt
+examples/*_output.txt
+
+# --- Cache & models ---
+.cache/
+.spacy/
+stanza_resources/
+*.model
+*.bin
+*.pkl
+
+# --- Notebooks ---
+*.ipynb_checkpoints/
+
+# --- OS-specific ---
+ehthumbs.db
+Icon?
+Desktop.ini
