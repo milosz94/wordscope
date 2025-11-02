@@ -202,7 +202,7 @@ wordscope/
 
 ## 🧩 License
 
-MIT License © 2025 [Miloš Živanović](https://github.com/milosz94)
+MIT License © 2025 [Miloš Živanović](./LICENSE
 
 ---
 
