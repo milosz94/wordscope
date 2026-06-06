@@ -5,6 +5,7 @@ from collections import Counter
 from src.utils import extract_text, bigrams, detect_language
 import os
 import sys
+import argparse
 
 def analyze_spacy(text, lang_model):
     """Analyzes text using a spaCy model."""
@@ -80,12 +81,53 @@ def save_results(path, freqs, clusters, metaphors):
             f.write("- " + m + "\n")
 
 
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: python -m src.analyze <path_to_docx>")
-        sys.exit(1)
+def save_results_md(path, freqs, clusters, metaphors):
+    os.makedirs("outputs", exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write("# WordScope Analysis\n\n")
 
-    input_path = sys.argv[1]
+        for cat, vals in freqs.items():
+            f.write(f"## {cat.capitalize()}\n\n")
+            if vals:
+                f.write("| Word | Count |\n")
+                f.write("|------|-------|\n")
+                for w, c in vals:
+                    f.write(f"| {w} | {c} |\n")
+            else:
+                f.write("_No entries found._\n")
+            f.write("\n")
+
+        f.write("## Common Word Clusters\n\n")
+        if clusters:
+            f.write("| Cluster | Count |\n")
+            f.write("|---------|-------|\n")
+            for (a, b), c in clusters:
+                f.write(f"| {a} {b} | {c} |\n")
+        else:
+            f.write("_No clusters found._\n")
+        f.write("\n")
+
+        f.write("## Possible Metaphors / Wordplay\n\n")
+        if metaphors:
+            for m in metaphors:
+                f.write("- " + m.strip() + "\n")
+        else:
+            f.write("_No metaphors detected._\n")
+        f.write("\n")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="WordScope: cross-lingual text analysis")
+    parser.add_argument("input", help="Path to .docx file")
+    parser.add_argument(
+        "--format",
+        choices=["txt", "md"],
+        default="txt",
+        help="Output format: txt (default) or md (Markdown)",
+    )
+    args = parser.parse_args()
+
+    input_path = args.input
     if not os.path.exists(input_path):
         print("❌ File not found:", input_path)
         sys.exit(1)
@@ -106,7 +148,13 @@ if __name__ == "__main__":
     else:
         freqs, clusters, metaphors = analyze_spacy(text, lang_model)
 
-    output_file = os.path.join("outputs", os.path.basename(input_path).replace(".docx", "_analysis.txt"))
-    save_results(output_file, freqs, clusters, metaphors)
+    base_name = os.path.basename(input_path).replace(".docx", "")
+    ext = args.format
+    output_file = os.path.join("outputs", f"{base_name}_analysis.{ext}")
+
+    if ext == "md":
+        save_results_md(output_file, freqs, clusters, metaphors)
+    else:
+        save_results(output_file, freqs, clusters, metaphors)
 
     print(f"✅ Analysis complete! Results saved to: {output_file}")
