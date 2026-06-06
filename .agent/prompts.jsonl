@@ -1,0 +1,1 @@
+{"ts":"2026-06-06T17:29:12Z","task":"Add pytest test suite for utils","outcome":"needs_review","had_learnings":false,"spec":"- [~] **Add pytest test suite for utils** — Create a `tests/` directory with pytest covering the helper functions in `src/utils.py`, add `pytest` to `requirements.txt`, and document running the tests in the README *(agent-ready)* "}
