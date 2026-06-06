@@ -13,7 +13,7 @@ and plain bullets are NOT picked up.
 
 ## Agent-ready tasks
 
-- [ ] **Add pytest test suite for utils** — Create a `tests/` directory with pytest covering the helper functions in `src/utils.py`, add `pytest` to `requirements.txt`, and document running the tests in the README *(agent-ready)*
+- [~] **Add pytest test suite for utils** — Create a `tests/` directory with pytest covering the helper functions in `src/utils.py`, add `pytest` to `requirements.txt`, and document running the tests in the README *(agent-ready)*
 - [ ] **Markdown report output** — Add a `--format {txt,md}` flag to `src/analyze.py` that writes a formatted Markdown report alongside the existing `.txt` output *(agent-ready)*
 - [ ] **JSON export of analysis** — Add a `--json` flag that serializes the frequency tables, word clusters, and detected metaphors to `outputs/<name>.json` *(agent-ready)*
 - [ ] **Graceful CLI errors** — Replace stack traces with friendly messages for missing files, unsupported file formats, and undetected language; cover the new behavior with tests *(agent-ready)*
