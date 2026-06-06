@@ -1,6 +1,7 @@
 import spacy
 import re
 import stanza
+import json
 from collections import Counter
 from src.utils import extract_text, bigrams, detect_language
 import os
@@ -64,6 +65,20 @@ def analyze_stanza(text):
     return freqs, bi, metaphors
 
 
+def save_json(path, freqs, clusters, metaphors):
+    os.makedirs("outputs", exist_ok=True)
+    data = {
+        "frequencies": {
+            cat: [{"word": w, "count": c} for w, c in vals]
+            for cat, vals in freqs.items()
+        },
+        "clusters": [{"words": list(pair), "count": c} for pair, c in clusters],
+        "metaphors": metaphors,
+    }
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+
 def save_results(path, freqs, clusters, metaphors):
     os.makedirs("outputs", exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
@@ -125,9 +140,15 @@ if __name__ == "__main__":
         default="txt",
         help="Output format: txt (default) or md (Markdown)",
     )
+    parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Also export analysis as JSON to outputs/<name>.json",
+    )
     args = parser.parse_args()
 
     input_path = args.input
+    export_json = args.json
     if not os.path.exists(input_path):
         print("❌ File not found:", input_path)
         sys.exit(1)
@@ -158,3 +179,8 @@ if __name__ == "__main__":
         save_results(output_file, freqs, clusters, metaphors)
 
     print(f"✅ Analysis complete! Results saved to: {output_file}")
+
+    if export_json:
+        json_file = os.path.join("outputs", base_name + ".json")
+        save_json(json_file, freqs, clusters, metaphors)
+        print(f"✅ JSON export saved to: {json_file}")
