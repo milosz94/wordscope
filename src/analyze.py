@@ -29,13 +29,18 @@ def analyze_spacy(text, lang_model):
     bi = Counter(bigrams(words)).most_common(20)
     metaphors = [s.text for s in doc.sents if re.search(r"som en|ligesom|kao da|kao", s.text, re.IGNORECASE)]
 
-    return freqs, bi, metaphors
+    raw_ents = {}
+    for ent in doc.ents:
+        raw_ents.setdefault(ent.label_, []).append(ent.text)
+    entities = {label: Counter(texts).most_common(20) for label, texts in raw_ents.items()}
+
+    return freqs, bi, metaphors, entities
 
 
 def analyze_stanza(text):
     """Fallback analyzer using Stanza (for Serbian)."""
     stanza.download("sr", verbose=False)
-    nlp = stanza.Pipeline("sr", use_gpu=False)
+    nlp = stanza.Pipeline("sr", processors="tokenize,pos,lemma,ner", use_gpu=False)
     doc = nlp(text)
 
     words = []
@@ -60,10 +65,16 @@ def analyze_stanza(text):
     bi = Counter(bigrams(words)).most_common(20)
     metaphors = [s.text for s in doc.sentences if re.search(r"kao da|kao", s.text, re.IGNORECASE)]
 
-    return freqs, bi, metaphors
+    raw_ents = {}
+    for sentence in doc.sentences:
+        for ent in sentence.ents:
+            raw_ents.setdefault(ent.type, []).append(ent.text)
+    entities = {label: Counter(texts).most_common(20) for label, texts in raw_ents.items()}
+
+    return freqs, bi, metaphors, entities
 
 
-def save_results(path, freqs, clusters, metaphors):
+def save_results(path, freqs, clusters, metaphors, entities):
     os.makedirs("outputs", exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         for cat, vals in freqs.items():
@@ -78,6 +89,15 @@ def save_results(path, freqs, clusters, metaphors):
         f.write("\n=== POSSIBLE METAPHORS / WORDPLAY ===\n")
         for m in metaphors:
             f.write("- " + m + "\n")
+
+        f.write("\n=== NAMED ENTITIES ===\n")
+        if entities:
+            for label in sorted(entities):
+                f.write(f"\n  [{label}]\n")
+                for text, count in entities[label]:
+                    f.write(f"  {text}: {count}\n")
+        else:
+            f.write("(none detected)\n")
 
 
 if __name__ == "__main__":
@@ -99,14 +119,14 @@ if __name__ == "__main__":
     if lang_model == "xx_sent_ud_sm":
         try:
             print("⚙️ Using spaCy multilingual model...")
-            freqs, clusters, metaphors = analyze_spacy(text, lang_model)
+            freqs, clusters, metaphors, entities = analyze_spacy(text, lang_model)
         except Exception:
             print("🔁 Falling back to Stanza for Serbian...")
-            freqs, clusters, metaphors = analyze_stanza(text)
+            freqs, clusters, metaphors, entities = analyze_stanza(text)
     else:
-        freqs, clusters, metaphors = analyze_spacy(text, lang_model)
+        freqs, clusters, metaphors, entities = analyze_spacy(text, lang_model)
 
     output_file = os.path.join("outputs", os.path.basename(input_path).replace(".docx", "_analysis.txt"))
-    save_results(output_file, freqs, clusters, metaphors)
+    save_results(output_file, freqs, clusters, metaphors, entities)
 
     print(f"✅ Analysis complete! Results saved to: {output_file}")
