@@ -1,0 +1,1 @@
+{"ts":"2026-06-06T17:27:55Z","task":"Markdown report output","outcome":"needs_review","had_learnings":false,"spec":"- [~] **Markdown report output** — Add a `--format {txt,md}` flag to `src/analyze.py` that writes a formatted Markdown report alongside the existing `.txt` output *(agent-ready)* "}
