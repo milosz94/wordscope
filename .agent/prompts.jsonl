@@ -1,0 +1,1 @@
+{"ts":"2026-06-06T17:33:02Z","task":"Named Entity Recognition section","outcome":"needs_review","had_learnings":false,"spec":"- [~] **Named Entity Recognition section** — Add an NER section to the analysis output using the existing spaCy (Danish) and Stanza (Serbian) models *(agent-ready)* "}
