@@ -14,7 +14,7 @@ def bigrams(tokens):
     return list(zip(a, b))
 
 def detect_language(text):
-    """Detects whether the text is Danish or Serbian."""
+    """Detects whether the text is Danish or Serbian. Returns None if language cannot be determined."""
     try:
         lang = detect(text)
         if lang.startswith("da"):
@@ -23,4 +23,4 @@ def detect_language(text):
             return "xx_sent_ud_sm"  # multilingual fallback for Serbian
     except Exception:
         pass
-    return "da_core_news_lg"
+    return None

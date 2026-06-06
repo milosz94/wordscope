@@ -6,6 +6,9 @@ from src.utils import extract_text, bigrams, detect_language
 import os
 import sys
 
+_SUPPORTED_EXTENSIONS = {".docx"}
+
+
 def analyze_spacy(text, lang_model):
     """Analyzes text using a spaCy model."""
     nlp = spacy.load(lang_model)
@@ -80,21 +83,39 @@ def save_results(path, freqs, clusters, metaphors):
             f.write("- " + m + "\n")
 
 
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv[1:]
+
+    if len(argv) < 1:
         print("Usage: python -m src.analyze <path_to_docx>")
         sys.exit(1)
 
-    input_path = sys.argv[1]
+    input_path = argv[0]
+
+    _, ext = os.path.splitext(input_path)
+    if ext.lower() not in _SUPPORTED_EXTENSIONS:
+        print(f"❌ Unsupported file format '{ext or '(none)'}'. Only .docx files are supported.")
+        sys.exit(1)
+
     if not os.path.exists(input_path):
-        print("❌ File not found:", input_path)
+        print(f"❌ File not found: {input_path}")
         sys.exit(1)
 
     print("📖 Reading:", input_path)
-    text = extract_text(input_path)
+    try:
+        text = extract_text(input_path)
+    except Exception as e:
+        print(f"❌ Could not read '{input_path}': {e}")
+        sys.exit(1)
+
     lang_model = detect_language(text)
 
-    print(f"🌐 Detected language model: {lang_model}")
+    if lang_model is None:
+        print("⚠️  Language could not be detected. Defaulting to Danish analysis.")
+        lang_model = "da_core_news_lg"
+    else:
+        print(f"🌐 Detected language model: {lang_model}")
 
     if lang_model == "xx_sent_ud_sm":
         try:
@@ -110,3 +131,7 @@ if __name__ == "__main__":
     save_results(output_file, freqs, clusters, metaphors)
 
     print(f"✅ Analysis complete! Results saved to: {output_file}")
+
+
+if __name__ == "__main__":
+    main()
