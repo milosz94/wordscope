@@ -1,0 +1,1 @@
+{"ts":"2026-06-06T17:28:28Z","task":"JSON export of analysis","outcome":"needs_review","had_learnings":false,"spec":"- [~] **JSON export of analysis** — Add a `--json` flag that serializes the frequency tables, word clusters, and detected metaphors to `outputs/<name>.json` *(agent-ready)* "}
