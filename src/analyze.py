@@ -8,6 +8,9 @@ import os
 import sys
 import argparse
 
+_SUPPORTED_EXTENSIONS = {".docx"}
+
+
 def analyze_spacy(text, lang_model):
     """Analyzes text using a spaCy model."""
     nlp = spacy.load(lang_model)
@@ -151,7 +154,14 @@ def save_results_md(path, freqs, clusters, metaphors):
         f.write("\n")
 
 
-if __name__ == "__main__":
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv[1:]
+
+    if not argv:
+        print("Usage: python -m src.analyze <path_to_docx> [--format {txt,md}] [--json]")
+        sys.exit(1)
+
     parser = argparse.ArgumentParser(description="WordScope: cross-lingual text analysis")
     parser.add_argument("input", help="Path to .docx file")
     parser.add_argument(
@@ -165,19 +175,34 @@ if __name__ == "__main__":
         action="store_true",
         help="Also export analysis as JSON to outputs/<name>.json",
     )
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     input_path = args.input
     export_json = args.json
+
+    _, in_ext = os.path.splitext(input_path)
+    if in_ext.lower() not in _SUPPORTED_EXTENSIONS:
+        print(f"❌ Unsupported file format '{in_ext or '(none)'}'. Only .docx files are supported.")
+        sys.exit(1)
+
     if not os.path.exists(input_path):
-        print("❌ File not found:", input_path)
+        print(f"❌ File not found: {input_path}")
         sys.exit(1)
 
     print("📖 Reading:", input_path)
-    text = extract_text(input_path)
+    try:
+        text = extract_text(input_path)
+    except Exception as e:
+        print(f"❌ Could not read '{input_path}': {e}")
+        sys.exit(1)
+
     lang_model = detect_language(text)
 
-    print(f"🌐 Detected language model: {lang_model}")
+    if lang_model is None:
+        print("⚠️  Language could not be detected. Defaulting to Danish analysis.")
+        lang_model = "da_core_news_lg"
+    else:
+        print(f"🌐 Detected language model: {lang_model}")
 
     if lang_model == "xx_sent_ud_sm":
         try:
@@ -204,3 +229,7 @@ if __name__ == "__main__":
         json_file = os.path.join("outputs", base_name + ".json")
         save_json(json_file, freqs, clusters, metaphors)
         print(f"✅ JSON export saved to: {json_file}")
+
+
+if __name__ == "__main__":
+    main()

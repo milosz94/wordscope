@@ -86,18 +86,18 @@ class TestDetectLanguage:
         with patch("src.utils.detect", return_value="sr-Cyrl"):
             assert detect_language("some text") == "xx_sent_ud_sm"
 
-    def test_unknown_language_defaults_to_danish_model(self):
+    def test_unknown_language_returns_none(self):
         with patch("src.utils.detect", return_value="fr"):
-            assert detect_language("bonjour le monde") == "da_core_news_lg"
+            assert detect_language("bonjour le monde") is None
 
-    def test_exception_from_langdetect_defaults_to_danish_model(self):
+    def test_exception_from_langdetect_returns_none(self):
         from langdetect import LangDetectException
         with patch("src.utils.detect", side_effect=LangDetectException(0, "failed")):
-            assert detect_language("!!!") == "da_core_news_lg"
+            assert detect_language("!!!") is None
 
-    def test_general_exception_defaults_to_danish_model(self):
+    def test_general_exception_returns_none(self):
         with patch("src.utils.detect", side_effect=Exception("unexpected")):
-            assert detect_language("???") == "da_core_news_lg"
+            assert detect_language("???") is None
 
     def test_return_type_is_string(self):
         with patch("src.utils.detect", return_value="da"):
