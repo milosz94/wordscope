@@ -1,0 +1,1 @@
+{"ts":"2026-06-06T17:35:48Z","task":"Graceful CLI errors","outcome":"needs_review","had_learnings":false,"spec":"- [~] **Graceful CLI errors** — Replace stack traces with friendly messages for missing files, unsupported file formats, and undetected language; cover the new behavior with tests *(agent-ready)* "}
